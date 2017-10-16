@@ -1,8 +1,8 @@
 # Bishop AI Smalltalk Plugin
 
-This is a plugin for [Bishop AI](https://github.com/bishop-ai/bishop-ai). This example plugin demonstrates how to store and retrieve memories to create a personalized experience.
+This is a plugin for [Bishop AI](https://github.com/bishop-ai/bishop-ai).
 
-Make smalltalk with Bishop AI. 
+Make smalltalk with Bishop AI. This example plugin demonstrates how to store and retrieve memories to create a personalized experience.
 
 ## Examples
 - "What is your name?"
