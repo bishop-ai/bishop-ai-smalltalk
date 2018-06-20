@@ -1,9 +1,10 @@
 {
     "name": "bishop-ai-smalltalk",
-    "version": "0.1.0",
-    "description": "Conversational interface for Bishop-AI",
+    "version": "0.3.0",
+    "description": "Smalltalk with Bishop-AI",
     "keywords": [
-        "bishop-ai plugin"
+        "bishop-ai plugin",
+        "small talk"
     ],
     "author": {
         "name": "David Hamilton",
@@ -13,9 +14,5 @@
     "homepage": "https://github.com/bishop-ai/bishop-ai-smalltalk",
     "bugs": "https://github.com/bishop-ai/bishop-ai-smalltalk/issues",
     "repository": "github:bishop-ai/bishop-ai-smalltalk",
-    "dependencies": {
-        "knuth-shuffle": "^1.0.1",
-        "moment": "~2.11.2",
-        "speakeasy-nlp": "^0.2.12"
-    }
+    "dependencies": {}
 }

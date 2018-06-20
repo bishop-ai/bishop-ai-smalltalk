@@ -1,27 +1,82 @@
-var moment = require('moment');
-var speak = require("speakeasy-nlp");
-var shuffle = require('knuth-shuffle').knuthShuffle;
-
 var SmallTalk = function (nlp) {
 
     this.intent = [
-        {value: "(hi|hello|hey|what [is] up|what is happening|yo|sup|good (morning|evening|afternoon)) *", trigger: "smalltalk.greeting"},
-        {value: "([i will] (see|talk to) you later|see you|later|[and] i am (off|out)|i am leaving|bye|goodbye|[have a] good (night|day)|have a good (morning|evening|afternoon)) *", trigger: "smalltalk.farewell"},
-        {value: "You are *", trigger: "smalltalk.compliment"},
-        {value: "I (love|adore|can not live without|like|dislike|can not stand|despise|hate) you", trigger: "smalltalk.compliment"},
-        {value: "(thank you|thanks)", trigger: "smalltalk.gratitude"},
-        {value: "how (are|have) you [been] [(doing|feeling)] *", trigger: "smalltalk.getAiInfo"},
-        {value: "what (is your name|do you call yourself|should I call you)", trigger: "smalltalk.getAiInfo"},
-        {value: "who are you", trigger: "smalltalk.getAiInfo"},
-        {value: "who am I talking to", trigger: "smalltalk.getAiInfo"},
-        {value: "where are you", trigger: "smalltalk.getAiInfo"},
-        {value: "do I know [who] you [are]", trigger: "smalltalk.getAiInfo"},
-        {value: "what [(other|else|[kind of] (things|tasks|jobs))] (can I ask you to|are you able to|can you) do [for me]", trigger: "smalltalk.getAiInfo"},
-        {value: "what [(other|else|[kind of] (things|questions))] can (I ask [you [about]]|you answer [for me])", trigger: "smalltalk.getAiInfo"},
-        {value: "what are you (doing|up to|working on|thinking about)", trigger: "smalltalk.getAiThoughts"},
-        {value: "do you know ([what] my name [is]|who I am|me|who you are (talking|speaking) (to|with))", trigger: "smalltalk.getUserName"},
-        {value: "(what is my name|who am I)", trigger: "smalltalk.getUserName"},
-        {value: "I [already] (said|told you) that [already] *", trigger: "smalltalk.apologize"}
+        {
+            value: "(hi|hello|hey|what [is] up|what is happening|yo|sup|good (morning|evening|afternoon)) *",
+            trigger: "smalltalk.greeting"
+        },
+        {
+            value: "([i will] (see|talk to) you later|see you|later|[and] i am (off|out)|i am leaving|bye|goodbye|[have a] good (night|day)|have a good (morning|evening|afternoon)) *",
+            trigger: "smalltalk.farewell"
+        },
+        {
+            value: "You are *",
+            trigger: "smalltalk.compliment"
+        },
+        {
+            value: "I (love|adore|can not live without|like|dislike|can not stand|despise|hate) you",
+            trigger: "smalltalk.compliment"
+        },
+        {
+            value: "(thank you|thanks)",
+            trigger: "smalltalk.gratitude"
+        },
+        {
+            value: "how (are|have) you [been] [(doing|feeling)] *",
+            trigger: "smalltalk.getAiInfo"
+        },
+        {
+            value: "how is it going *",
+            trigger: "smalltalk.getAiInfo"
+        },
+        {
+            value: "what (is your name|do you call yourself|should I call you)",
+            trigger: "smalltalk.getAiInfo"
+        },
+        {
+            value: "who are you",
+            trigger: "smalltalk.getAiInfo"
+        },
+        {
+            value: "who am I talking to",
+            trigger: "smalltalk.getAiInfo"
+        },
+        {
+            value: "where are you",
+            trigger: "smalltalk.getAiInfo"
+        },
+        {
+            value: "do I know [who] you [are]",
+            trigger: "smalltalk.getAiInfo"
+        },
+        {
+            value: "what [(other|else|[kind of] (things|tasks|jobs))] (can I ask you to|are you able to|can you) do [for me]",
+            trigger: "smalltalk.getAiInfo"
+        },
+        {
+            value: "what [(other|else|[kind of] (things|questions))] can (I ask [you [about]]|you answer [for me])",
+            trigger: "smalltalk.getAiInfo"
+        },
+        {
+            value: "what are you (doing|up to|working on|thinking about)",
+            trigger: "smalltalk.getAiThoughts"
+        },
+        {
+            value: "do you know ([what] my name [is]|who I am|me|who you are (talking|speaking) (to|with))",
+            trigger: "smalltalk.getUserName"
+        },
+        {
+            value: "(what is my name|who am I)",
+            trigger: "smalltalk.getUserName"
+        },
+        {
+            value: "(your name (is|will be)|i will (call|name) you) *name",
+            trigger: "smalltalk.setAiName"
+        },
+        {
+            value: "I [already] (said|told you) that [already] *",
+            trigger: "smalltalk.apologize"
+        }
     ];
 
     this.triggers = {
@@ -45,24 +100,45 @@ var SmallTalk = function (nlp) {
 
             if (name) {
                 responses = responses.concat([
-                    {value: "(Hello|Hi) " + name + ". [(How can I (help [you]|be of assistance)|What can I (help you with|do for you))?]", weight: 3},
-                    {value: "(Hello|Hi). (How can I (help [you]|be of assistance)|What can I (help you with|do for you)) " + name + "?", weight: 3},
-                    {value: name + "! Nice to see you again.", weight: 3}
+                    {
+                        value: "(Hello|Hi) " + name + ". [(How can I (help [you]|be of assistance)|What can I (help you with|do for you))?]",
+                        weight: 3
+                    },
+                    {
+                        value: "(Hello|Hi). (How can I (help [you]|be of assistance)|What can I (help you with|do for you)) " + name + "?",
+                        weight: 3
+                    },
+                    {
+                        value: name + "! Nice to see you again.",
+                        weight: 3
+                    }
                 ]);
                 if (dt >= 0 && dt <= 11) {
-                    responses.push({value: "Good morning " + name + ". [(How can I (help [you]|be of assistance)|What can I (help you with|do for you))?]", weight: 4});
+                    responses.push({
+                        value: "Good morning " + name + ". [(How can I (help [you]|be of assistance)|What can I (help you with|do for you))?]",
+                        weight: 4
+                    });
                 } else if (dt >= 12 && dt <= 17) {
-                    responses.push({value: "Good afternoon " + name + ". [(How can I (help [you]|be of assistance)|What can I (help you with|do for you))?]", weight: 4});
+                    responses.push({
+                        value: "Good afternoon " + name + ". [(How can I (help [you]|be of assistance)|What can I (help you with|do for you))?]",
+                        weight: 4
+                    });
                 } else {
-                    responses.push({value: "Good evening " + name + ". [(How can I (help [you]|be of assistance)|What can I (help you with|do for you))?]", weight: 4});
+                    responses.push({
+                        value: "Good evening " + name + ". [(How can I (help [you]|be of assistance)|What can I (help you with|do for you))?]",
+                        weight: 4
+                    });
                 }
             }
 
             if (!name) {
                 responses = responses.concat([
-                    {value: "(Hi|Hello). [I don't (think|believe) we've (met|been [properly] introduced).] What is your name?", expectations: [
-                        { value: "[(it is|my name is|you can call me)] *name", trigger: "smalltalk.setUserName" }
-                    ]}
+                    {
+                        value: "(Hi|Hello). [I don't (think|believe) we've (met|been [properly] introduced).] What is your name?",
+                        expectations: [
+                            {value: "[(it is|my name is|you can call me)] *name", trigger: "smalltalk.setUserName"}
+                        ]
+                    }
                 ]);
             }
 
@@ -112,7 +188,7 @@ var SmallTalk = function (nlp) {
 
             var name = utils.getMemory('userName');
 
-            var sentiment = speak.sentiment.analyze(expression.normalized).score;
+            var sentiment = expression.analysis[0].profile.sentiment;
 
             if (sentiment < 0) {
                 responses = responses.concat([
@@ -136,8 +212,14 @@ var SmallTalk = function (nlp) {
                 ]);
                 if (name) {
                     responses = responses.concat([
-                        {value: "[(Thanks|Thank you)!] That is [very] (nice|kind) [of you] " + name + ".", weight: 2},
-                        {value: "(Thank you|Thanks) " + name + ".", weight: 2}
+                        {
+                            value: "[(Thanks|Thank you)!] That is [very] (nice|kind) [of you] " + name + ".",
+                            weight: 2
+                        },
+                        {
+                            value: "(Thank you|Thanks) " + name + ".",
+                            weight: 2
+                        }
                     ]);
                 }
             }
@@ -177,19 +259,32 @@ var SmallTalk = function (nlp) {
                     ]);
                 } else {
                     responses = responses.concat([
-                        {value: "I am your personal assistant. What ((would you like|do you want) to (call|name) me|should my name be)?", weight: 2, expectations: [
-                            { value: "[(your name is|i will call you|it is|how about|what about)] *name", trigger: "smalltalk.setAiName" }
-                        ]}
+                        {
+                            value: "I am your personal assistant. What ((would you like|do you want) to (call|name) me|should my name be)?",
+                            weight: 2,
+                            expectations: [
+                                {
+                                    value: "[(your name is|i will call you|it is|how about|what about)] *name",
+                                    trigger: "smalltalk.setAiName"
+                                }
+                            ]
+                        }
                     ]);
                 }
             } else if (expression.contains('how')) {
                 responses = [
-                    {value: "I'm doing (well|fine|great), [(thanks|thank you),] ([and] (how|what) about you|[and] how are you [doing]|and yourself)?", expectations: [
-                        { value: "(good|fine|great|awesome|awful|terrible|miserable|not good|bad|not great|not awesome|i (am [feeling]|have been) *)", trigger: "smalltalk.setUserFeeling" }
-                    ]}
+                    {
+                        value: "I'm doing (well|fine|great), [(thanks|thank you),] ([and] (how|what) about you|[and] how are you [doing]|and yourself)?",
+                        expectations: [
+                            {
+                                value: "(well|ok|good|fine|great|awesome|awful|terrible|miserable|not good|bad|not great|not awesome|i (am [feeling]|have been) *)",
+                                trigger: "smalltalk.setUserFeeling"
+                            }
+                        ]
+                    }
                 ];
             } else if (expression.contains("what") && expression.contains("skills", "you do", "ask", "questions", "answer")) {
-                var examples = shuffle(utils.getExamples().slice(0));
+                var examples = nlp.shuffle(utils.getExamples().slice(0));
                 var max = Math.min(examples.length, 5);
 
                 var response = "Here are [(some|a (few|couple))] [examples of] things you can say or ask: ";
@@ -218,9 +313,15 @@ var SmallTalk = function (nlp) {
                     responses = responses.concat([
                         "(I don't know|I'm not sure) what my name is.",
                         "No one has ever given me a name.",
-                        {value: "[(I don't know|I'm not sure) what my name is.] What ((would you like|do you want) to (call|name) me|should my name be)?", expectations: [
-                            { value: "[(your name is|i will call you|it is|how about|what about)] *name", trigger: "smalltalk.setAiName" }
-                        ]}
+                        {
+                            value: "[(I don't know|I'm not sure) what my name is.] What ((would you like|do you want) to (call|name) me|should my name be)?",
+                            expectations: [
+                                {
+                                    value: "[(your name is|i will call you|it is|how about|what about)] *name",
+                                    trigger: "smalltalk.setAiName"
+                                }
+                            ]
+                        }
                     ]);
                 }
             }
@@ -252,7 +353,7 @@ var SmallTalk = function (nlp) {
             var i;
             var birthday;
 
-            var entities = nlp.personNer.extract(expression.normalized, expression);
+            var entities = nlp.ner(expression.normalized, expression);
             for (i = 0; i < entities.length; i++) {
                 if (entities[i].type === 'person.age') {
                     birthday = entities[i].value;
@@ -273,7 +374,7 @@ var SmallTalk = function (nlp) {
             var i;
             var timeFromNow;
 
-            var entities = nlp.datetimeNer.extract(expression.normalized);
+            var entities = nlp.ner(expression.normalized);
             for (i = 0; i < entities.length; i++) {
                 if (entities[i].type === 'datetime.datetime') {
                     timeFromNow = entities[i].value;
@@ -298,15 +399,19 @@ var SmallTalk = function (nlp) {
             dfd.resolve(responses);
         },
 
-        setAiName: function (dfd, expression, utils) {
+        setAiName: function (dfd, expression, utils, intentData) {
             var i;
             var name;
 
-            var entities = nlp.personNer.extract(expression.normalized, expression);
-            for (i = 0; i < entities.length; i++) {
-                if (entities[i].type === 'person.name') {
-                    name = entities[i].value;
-                    break;
+            if (intentData.namedValues.name) {
+                name = intentData.namedValues.name;
+            } else {
+                var entities = nlp.ner(expression.normalized, expression);
+                for (i = 0; i < entities.length; i++) {
+                    if (entities[i].type === 'person.name') {
+                        name = entities[i].value;
+                        break;
+                    }
                 }
             }
 
@@ -325,7 +430,7 @@ var SmallTalk = function (nlp) {
             var i;
             var birthday;
 
-            var entities = nlp.personNer.extract(expression.normalized, expression);
+            var entities = nlp.ner(expression.normalized, expression);
             for (i = 0; i < entities.length; i++) {
                 if (entities[i].type === 'person.age') {
                     birthday = entities[i].value;
@@ -346,7 +451,7 @@ var SmallTalk = function (nlp) {
             var i;
             var timeFromNow;
 
-            var entities = nlp.datetimeNer.extract(expression.normalized);
+            var entities = nlp.ner(expression.normalized);
             for (i = 0; i < entities.length; i++) {
                 if (entities[i].type === 'datetime.datetime') {
                     timeFromNow = entities[i].value;
@@ -371,15 +476,19 @@ var SmallTalk = function (nlp) {
             dfd.resolve(responses);
         },
 
-        setUserName: function (dfd, expression, utils) {
+        setUserName: function (dfd, expression, utils, intentData) {
             var i;
             var name;
 
-            var entities = nlp.personNer.extract(expression.normalized, expression);
-            for (i = 0; i < entities.length; i++) {
-                if (entities[i].type === 'person.name') {
-                    name = entities[i].value;
-                    break;
+            if (intentData.namedValues.name) {
+                name = intentData.namedValues.name;
+            } else {
+                var entities = nlp.ner(expression.normalized, expression);
+                for (i = 0; i < entities.length; i++) {
+                    if (entities[i].type === 'person.name') {
+                        name = entities[i].value;
+                        break;
+                    }
                 }
             }
 
@@ -402,9 +511,11 @@ var SmallTalk = function (nlp) {
             if (name) {
                 responses.push("Your name is " + name + ".");
             } else {
-                responses.push({value: "(I'm not sure|I don't know). What is your name?", expectations: [
-                    { value: "[(it is|my name is|you can call me)] *name", trigger: "smalltalk.setUserName" }
-                ]});
+                responses.push({
+                    value: "(I'm not sure|I don't know). What is your name?", expectations: [
+                        {value: "[(it is|my name is|you can call me)] *name", trigger: "smalltalk.setUserName"}
+                    ]
+                });
             }
 
             dfd.resolve(responses);
@@ -413,14 +524,19 @@ var SmallTalk = function (nlp) {
         setUserFeeling: function (dfd, expression) {
             var responses = [];
 
-            var sentiment = speak.sentiment.analyze(expression.normalized).score;
+            var sentiment = expression.analysis[0].profile.sentiment;
 
             if (sentiment < 0) {
                 responses.push("I'm [very] (sorry|sad) to hear that.");
             } else if (sentiment === 0 && !expression.contains("ok")) {
-                responses.push({value: "[I'm not sure I understand. ]What do you mean?", expectations: [
-                    { value: "(good|fine|great|awesome|awful|terrible|miserable|not good|bad|not great|not awesome|i (am [feeling]|have been) *)", trigger: "smalltalk.setUserFeeling" }
-                ]});
+                responses.push({
+                    value: "[I'm not sure I understand. ]What do you mean?", expectations: [
+                        {
+                            value: "(well|ok|good|fine|great|awesome|awful|terrible|miserable|not good|bad|not great|not awesome|i (am [feeling]|have been) *)",
+                            trigger: "smalltalk.setUserFeeling"
+                        }
+                    ]
+                });
             } else {
                 responses.push("I'm [very] (glad|happy) to hear that.");
             }
@@ -431,7 +547,7 @@ var SmallTalk = function (nlp) {
         apologize: function (dfd, expression) {
             var responses = [];
 
-            var sentiment = speak.sentiment.analyze(expression.normalized).score;
+            var sentiment = expression.analysis[0].profile.sentiment;
 
             if (sentiment < 0) {
                 responses.push("I'm (very|terribly) sorry.");
@@ -454,6 +570,7 @@ var SmallTalk = function (nlp) {
 
 module.exports = {
     namespace: "smalltalk",
+    description: "Some small talk",
     examples: [
         "What is your name?",
         "What can you do?",
